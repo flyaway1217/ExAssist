@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-11-23 13:59:38
+# Last modified: 2017-11-24 11:34:10
 
 """
 Basic Observer of Experiment.
@@ -16,6 +16,10 @@ Basic Observer of Experiment.
 
 import threading
 import os
+import json
+
+import host_info
+
 
 _lock = threading.RLock()
 
@@ -45,6 +49,7 @@ class Observer:
         self._config = None
         self._comments = None
         self._started = False
+        self._path = None
 
     def setConfig(self, config):
         """
@@ -53,19 +58,32 @@ class Observer:
         Args:
             config: ConfigParser
         """
-        self._config = config
+        if self._isLocked():
+            raise Exception(
+                    'Observer has been locked,  can not add more configs')
+        else:
+            self._config = config
 
     def setComments(self, comments):
-        self._comments = comments
+        if self._isLocked():
+            raise Exception(
+                    'Observer has been locked,  can not add more comments')
+        else:
+            self._comments = comments
 
     def start(self):
-        if self._started is False:
-            self._init_experiment()
+        if not self._isLocked():
+            self._path = self._init_experiment()
+            self._write_config()
             self._started = True
 
-    def loss(self, iteration, loss):
-        pass
+            info = self._get_host_info()
+            self._write_json(
+                    os.path.join(self._path, 'run.json'), info)
 
+    ########################################################
+    # Private methods
+    ########################################################
     def _init_experiment(self):
         """Initialize the experiment.
 
@@ -74,13 +92,12 @@ class Observer:
         1. Create the root directory if it does not exist.
         2. Find the max index of sub directoreis.
         3. Create a new directory.
-        4. Write down all the configurations.
+        4. Return the path
         """
         # Step 1
         dir_name = self._dir_name
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
-
         # Step 2
         names = os.listdir(dir_name)
         names = [int(s) for s in names if s.isdecimal()]
@@ -88,15 +105,28 @@ class Observer:
             index = max(names) + 1
         else:
             index = 0
-
         # Step 3
         path = os.path.join(dir_name, str(index))
         os.mkdir(path)
+        return path
 
-        # Step 4
+    def _isLocked(self):
+        return self._started is True
+
+    def _write_config(self):
+        """Write down the config file.
+        """
+        path = self._path
         path = os.path.join(path, 'config.ini')
         with open(path, 'w', encoding='utf8') as f:
             self._config.write(f)
+
+    def _get_host_info(self):
+        return host_info.get_host_info()
+
+    def _write_json(self, path, obj):
+        with open(path, 'w', encoding='utf8') as f:
+            json.dump(obj, f, indent=0)
 
 
 class Manager:
