@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-11-24 11:34:10
+# Last modified: 2017-12-05 14:34:57
 
 """
 Basic Observer of Experiment.
@@ -17,6 +17,7 @@ Basic Observer of Experiment.
 import threading
 import os
 import json
+import atexit
 
 import host_info
 
@@ -50,6 +51,9 @@ class Observer:
         self._comments = None
         self._started = False
         self._path = None
+        atexit.register(self._save_info)
+
+        self.info = dict()
 
     def setConfig(self, config):
         """
@@ -79,7 +83,7 @@ class Observer:
 
             info = self._get_host_info()
             self._write_json(
-                    os.path.join(self._path, 'run.json'), info)
+                    os.path.join(self._path, 'host.json'), info)
 
     ########################################################
     # Private methods
@@ -127,6 +131,10 @@ class Observer:
     def _write_json(self, path, obj):
         with open(path, 'w', encoding='utf8') as f:
             json.dump(obj, f, indent=0)
+
+    def _save_info(self):
+        self._write_json(
+                os.path.join(self._path, 'info.json'), self.info)
 
 
 class Manager:

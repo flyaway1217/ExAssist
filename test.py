@@ -9,3 +9,9 @@ config.read('config.ini', encoding='utf8')
 observer.setConfig(config)
 
 observer.start()
+
+for i in range(1000):
+    observer.info['loss'][i] = i*10
+
+while True:
+    i = 1
