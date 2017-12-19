@@ -2,7 +2,7 @@ import ExAsist.observer as ob
 import configparser
 
 
-def test_info():
+def test_host():
     observer = ob.getObserver('Test')
     config = configparser.ConfigParser(
             interpolation=configparser.ExtendedInterpolation())
@@ -11,7 +11,4 @@ def test_info():
     observer.setConfig(config)
 
     observer.start()
-
-    for i in range(1000):
-        observer.info['loss'][i] = i*10
     assert 1 == 1
