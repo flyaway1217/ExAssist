@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-24 10:59:35
-# Last modified: 2017-11-24 11:23:26
+# Last modified: 2017-12-18 20:43:44
 
 """
 Collect information about the host of an experiment.
@@ -104,8 +104,3 @@ def get_host_info():
         except IgnoreHostInfo:
             pass
     return host_info
-
-
-if __name__ == '__main__':
-    s = get_host_info()
-    print(s)

@@ -7,10 +7,10 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-18 20:29:16
+# Last modified: 2017-12-18 21:10:09
 
 """
-Basic Observer of Experiment.
+Basic Assist of Experiment.
 """
 
 
@@ -19,7 +19,7 @@ import os
 import json
 import atexit
 
-from ExAsist import host_info
+from ExAssist import host_info
 
 
 _lock = threading.RLock()
@@ -43,7 +43,14 @@ def _releaseLock():
         _lock.release()
 
 
-class Observer:
+class Assist:
+    """
+
+    Attributes:
+        - name: The name of observer.
+        - _dir_name: Directory of experiments.
+        - _config: Config object of current Assist.
+    """
     def __init__(self, name, dir_name='Experiments/'):
         self.name = name
         self._dir_name = dir_name
@@ -64,14 +71,14 @@ class Observer:
         """
         if self._isLocked():
             raise Exception(
-                    'Observer has been locked,  can not add more configs')
+                    'Assist has been locked,  can not add more configs')
         else:
             self._config = config
 
     def setComments(self, comments):
         if self._isLocked():
             raise Exception(
-                    'Observer has been locked,  can not add more comments')
+                    'Assist has been locked,  can not add more comments')
         else:
             self._comments = comments
 
@@ -139,9 +146,9 @@ class Observer:
 
 class Manager:
     def __init__(self):
-        self.observerDict = {}
+        self.assistDict = {}
 
-    def getObserver(self, name):
+    def getAssist(self, name):
         """
         Get a observer with specified name, creating it if
         it doesn't yet exit.
@@ -154,23 +161,12 @@ class Manager:
             raise TypeError('A observer name must be a string')
         _acquireLock()
         try:
-            if name in self.observerDict:
+            if name in self.assistDict:
                 rv = self.observerDict[name]
             else:
-                rv = Observer(name)
+                rv = Assist(name)
                 rv.manager = self
-                self.observerDict[name] = rv
+                self.assistDict[name] = rv
         finally:
             _releaseLock()
         return rv
-
-#############################################################
-# Module functions
-#############################################################
-
-
-manager = Manager()
-
-
-def getObserver(name):
-    return manager.getObserver(name)
