@@ -7,14 +7,12 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-18 21:46:43
+# Last modified: 2017-12-18 22:00:50
 
 """
 Basic Assist of Experiment.
 """
 
-
-import threading
 import os
 import json
 import atexit
@@ -23,33 +21,12 @@ import collections
 from ExAssist import host_info
 
 
-_lock = threading.RLock()
-
-
-def _acquireLock():
-    """
-    Acquire the module-level lock for serializing access to shared data.
-
-    This should be released with _releaseLock().
-    """
-    if _lock:
-        _lock.acquire()
-
-
-def _releaseLock():
-    """
-    Release the module-level lock acquired by calling _acquireLock().
-    """
-    if _lock:
-        _lock.release()
-
-
 class Assist:
     """
 
     Attributes:
         - name: The name of observer.
-        - ex_dir: Directory of all experiments.
+        - _ex_dir: Directory of all experiments.
         - _config: Config object of current Assist.
         - _comments: Comments for current experiment.
         - _started: Indicate if the assist is locked.
@@ -57,7 +34,7 @@ class Assist:
     """
     def __init__(self, name):
         self.name = name
-        self.ex_dir = 'Experiments/'
+        self._ex_dir = 'Experiments/'
         self._config = None
         self._comments = None
         self._started = False
@@ -65,26 +42,6 @@ class Assist:
         atexit.register(self._save_info)
 
         self.info = collections.defaultdict(dict)
-
-    def setConfig(self, config):
-        """
-        Setup the configuration for current experiments.
-
-        Args:
-            config: ConfigParser
-        """
-        if self._isLocked():
-            raise Exception(
-                    'Assist has been locked,  can not add more configs')
-        else:
-            self._config = config
-
-    def setComments(self, comments):
-        if self._isLocked():
-            raise Exception(
-                    'Assist has been locked,  can not add more comments')
-        else:
-            self._comments = comments
 
     def start(self):
         if not self._isLocked():
@@ -95,6 +52,42 @@ class Assist:
             info = self._get_host_info()
             self._write_json(
                     os.path.join(self._path, 'host.json'), info)
+
+    @property
+    def config(self):
+        return self._config
+
+    @config.setter
+    def config(self, value):
+        if self._isLocked():
+            raise Exception(
+                    'Assist has been locked,  can not add more configs')
+        else:
+            self._config = value
+
+    @property
+    def comments(self):
+        return self._comments
+
+    @comments.setter
+    def comments(self, value):
+        if self._isLocked():
+            raise Exception(
+                    'Assist has been locked,  can not add more comments')
+        else:
+            self._comments = value
+
+    @property
+    def ex_dir(self):
+        return self._ex_dir
+
+    @ex_dir.setter
+    def ex_dir(self, value):
+        if self._isLocked():
+            raise Exception(
+                    'Assist has been locked,  can not add more comments')
+        else:
+            self._ex_dir = value
 
     ########################################################
     # Private methods
@@ -110,7 +103,7 @@ class Assist:
         4. Return the path
         """
         # Step 1
-        dir_name = self.ex_dir
+        dir_name = self._ex_dir
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
         # Step 2
@@ -146,31 +139,3 @@ class Assist:
     def _save_info(self):
         self._write_json(
                 os.path.join(self._path, 'info.json'), self.info)
-
-
-class Manager:
-    def __init__(self):
-        self.assistDict = {}
-
-    def getAssist(self, name):
-        """
-        Get a observer with specified name, creating it if
-        it doesn't yet exit.
-
-        Args:
-            name: str - The name of observer.
-        """
-        rv = None
-        if not isinstance(name, str):
-            raise TypeError('A observer name must be a string')
-        _acquireLock()
-        try:
-            if name in self.assistDict:
-                rv = self.assistDict[name]
-            else:
-                rv = Assist(name)
-                rv.manager = self
-                self.assistDict[name] = rv
-        finally:
-            _releaseLock()
-        return rv

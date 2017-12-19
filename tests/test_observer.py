@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:04:39
-# Last modified: 2017-12-18 21:46:12
+# Last modified: 2017-12-18 22:01:55
 
 """
 Test for Assist
@@ -24,7 +24,7 @@ class TestEA:
         config = configparser.ConfigParser(
                 interpolation=configparser.ExtendedInterpolation())
         config.read('tests/config.ini', encoding='utf8')
-        assist.setConfig(config)
+        assist.config = config
         assist.start()
 
     def test_getting(self):
