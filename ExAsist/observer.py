@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-05 14:34:57
+# Last modified: 2017-12-18 20:29:16
 
 """
 Basic Observer of Experiment.
@@ -19,7 +19,7 @@ import os
 import json
 import atexit
 
-import host_info
+from ExAsist import host_info
 
 
 _lock = threading.RLock()
