@@ -7,10 +7,13 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-24 10:59:35
-# Last modified: 2017-12-18 20:43:44
+# Last modified: 2017-12-18 21:37:37
 
 """
 Collect information about the host of an experiment.
+
+TODO:
+    1. Python dependency
 """
 
 import os

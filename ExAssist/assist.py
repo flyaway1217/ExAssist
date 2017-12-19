@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-18 21:10:09
+# Last modified: 2017-12-18 21:46:43
 
 """
 Basic Assist of Experiment.
@@ -18,6 +18,7 @@ import threading
 import os
 import json
 import atexit
+import collections
 
 from ExAssist import host_info
 
@@ -48,19 +49,22 @@ class Assist:
 
     Attributes:
         - name: The name of observer.
-        - _dir_name: Directory of experiments.
+        - ex_dir: Directory of all experiments.
         - _config: Config object of current Assist.
+        - _comments: Comments for current experiment.
+        - _started: Indicate if the assist is locked.
+        - _path: The directory of current experiment.
     """
-    def __init__(self, name, dir_name='Experiments/'):
+    def __init__(self, name):
         self.name = name
-        self._dir_name = dir_name
+        self.ex_dir = 'Experiments/'
         self._config = None
         self._comments = None
         self._started = False
         self._path = None
         atexit.register(self._save_info)
 
-        self.info = dict()
+        self.info = collections.defaultdict(dict)
 
     def setConfig(self, config):
         """
@@ -106,7 +110,7 @@ class Assist:
         4. Return the path
         """
         # Step 1
-        dir_name = self._dir_name
+        dir_name = self.ex_dir
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
         # Step 2
@@ -162,7 +166,7 @@ class Manager:
         _acquireLock()
         try:
             if name in self.assistDict:
-                rv = self.observerDict[name]
+                rv = self.assistDict[name]
             else:
                 rv = Assist(name)
                 rv.manager = self
