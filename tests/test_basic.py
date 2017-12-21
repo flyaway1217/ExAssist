@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:04:39
-# Last modified: 2017-12-19 20:42:59
+# Last modified: 2017-12-20 20:19:53
 
 """
 Test for Assist
@@ -40,4 +40,13 @@ class TestEA:
         s = 'Assist has been locked,  can not add more comments'
         with pytest.raises(Exception) as excinfo:
             assist.comments = 'This is a test.'
+
+        s = 'Assist has been locked,  can not add more configs'
+        with pytest.raises(Exception) as excinfo:
+            assist.config = 'This is a test.'
         assert str(excinfo.value) == s
+
+    def test_info(self):
+        assist = EA.getAssist('Test')
+        for i in range(100):
+            assist.info['loss'][i] = 100-i

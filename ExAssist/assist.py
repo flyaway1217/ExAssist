@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-18 22:00:50
+# Last modified: 2017-12-20 20:21:59
 
 """
 Basic Assist of Experiment.
@@ -23,7 +23,6 @@ from ExAssist import host_info
 
 class Assist:
     """
-
     Attributes:
         - name: The name of observer.
         - _ex_dir: Directory of all experiments.
@@ -85,7 +84,7 @@ class Assist:
     def ex_dir(self, value):
         if self._isLocked():
             raise Exception(
-                    'Assist has been locked,  can not add more comments')
+                'Assist has been locked,  can not set experiments directory.')
         else:
             self._ex_dir = value
 
