@@ -7,16 +7,17 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:05:07
-# Last modified: 2017-12-18 21:50:47
+# Last modified: 2017-12-21 21:47:46
 
 """
 """
 
 import threading
+import traceback
 
 from ExAssist import assist
 
-__all__ = ['getAssist']
+__all__ = ['getAssist', 'start']
 
 
 _lock = threading.RLock()
@@ -69,6 +70,25 @@ class Manager:
 
 
 manager = Manager()
+
+
+class start:
+    def __init__(self, assist):
+        self._assist = assist
+
+    def __enter__(self):
+        self._assist._start()
+        return self._assist
+
+    def __exit__(self, exc_type, exc_value, trace):
+        if any((exc_type, exc_type, trace)):
+            traceback.format_exc()
+            if exc_type == KeyboardInterrupt:
+                self._assist._end('Aborted')
+            else:
+                self._assist._end('Failed')
+        else:
+            self._assist._end('Completed')
 
 
 def getAssist(name):

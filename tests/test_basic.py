@@ -7,14 +7,12 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:04:39
-# Last modified: 2017-12-20 20:19:53
+# Last modified: 2017-12-21 21:37:27
 
 """
 Test for Assist
 """
 import configparser
-
-import pytest
 
 import ExAssist as EA
 
@@ -28,25 +26,30 @@ class TestEA:
                 interpolation=configparser.ExtendedInterpolation())
         config.read('tests/config.ini', encoding='utf8')
         assist.config = config
-        assist.comments = 'This is a test comment'
-        assist.start()
+        # assist.comments = 'This is a test comment'
 
     def test_getting(self):
         assist = EA.getAssist('Test')
         assert assist.ex_dir == 'tests/Experiments/'
 
-    def test_start_exception(self):
-        assist = EA.getAssist('Test')
-        s = 'Assist has been locked,  can not add more comments'
-        with pytest.raises(Exception) as excinfo:
-            assist.comments = 'This is a test.'
+        comments = 'First comment'
+        assert assist.comments is None
 
-        s = 'Assist has been locked,  can not add more configs'
-        with pytest.raises(Exception) as excinfo:
-            assist.config = 'This is a test.'
-        assert str(excinfo.value) == s
+        assist.comments = comments
+        assert assist.comments == comments
+        assert assist._locked is False
+
+        with EA.start(assist) as assist:
+            assert assist._locked is True
+            assist.comments = 'Second comment'
+            assert assist.comments == comments
+
+        assert assist._locked is False
+        assist.comments = 'Second comment'
+        assert assist.comments == 'Second comment'
 
     def test_info(self):
         assist = EA.getAssist('Test')
-        for i in range(100):
-            assist.info['loss'][i] = 100-i
+        with EA.start(assist) as assist:
+            for i in range(100):
+                assist.info['loss'][i] = 100-i

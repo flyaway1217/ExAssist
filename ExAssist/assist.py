@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-20 20:47:49
+# Last modified: 2017-12-21 21:37:53
 
 """
 Basic Assist of Experiment.
@@ -15,9 +15,9 @@ Basic Assist of Experiment.
 
 import os
 import json
-import atexit
 import collections
 import time
+import configparser
 
 from ExAssist import host_info
 
@@ -35,23 +35,40 @@ class Assist:
     def __init__(self, name):
         self.name = name
         self._ex_dir = 'Experiments/'
-        self._config = None
+        self._config = configparser.ConfigParser()
         self._comments = None
-        self._started = False
+        self._locked = False
         self._path = None
-        atexit.register(self._save_info)
 
-        self.info = collections.defaultdict(dict)
+        self._info = collections.defaultdict(dict)
+        self._run = dict()
 
-    def start(self):
-        if not self._isLocked():
+    def _start(self):
+        if not self._locked:
+            strtime = time.strftime(
+                     '%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            self._run['start_time'] = strtime
+
             self._path = self._init_experiment()
             self._write_config()
-            self._started = True
+            self._locked = True
 
             info = self._get_host_info()
             self._write_json(
                     os.path.join(self._path, 'host.json'), info)
+
+    def _end(self, status):
+        if self._locked:
+            self._run['status'] = status
+            strtime = time.strftime(
+                     '%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            self._run['stop_time'] = strtime
+            self._save_run()
+            self._save_info()
+            self._locked = False
+
+            self._run = dict()
+            self._info = collections.defaultdict(dict)
 
     @property
     def config(self):
@@ -59,10 +76,7 @@ class Assist:
 
     @config.setter
     def config(self, value):
-        if self._isLocked():
-            raise Exception(
-                    'Assist has been locked,  can not add more configs')
-        else:
+        if not self._locked:
             self._config = value
 
     @property
@@ -71,10 +85,8 @@ class Assist:
 
     @comments.setter
     def comments(self, value):
-        if self._isLocked():
-            raise Exception(
-                    'Assist has been locked,  can not add more comments')
-        else:
+        if not self._locked:
+            print(value)
             self._comments = value
 
     @property
@@ -83,11 +95,15 @@ class Assist:
 
     @ex_dir.setter
     def ex_dir(self, value):
-        if self._isLocked():
-            raise Exception(
-                'Assist has been locked,  can not set experiments directory.')
-        else:
+        if not self._locked:
             self._ex_dir = value
+
+    @property
+    def info(self):
+        if self._locked:
+            return self._info
+        else:
+            return dict()
 
     ########################################################
     # Private methods
@@ -118,19 +134,12 @@ class Assist:
         os.mkdir(path)
         return path
 
-    def _isLocked(self):
-        return self._started is True
-
     def _write_config(self):
         """Write down the config file.
         """
         path = self._path
         path = os.path.join(path, 'config.ini')
         with open(path, 'w', encoding='utf8') as f:
-            strtime = time.strftime(
-                     '%Y_%m_%d_%H_%M_%S', time.localtime(time.time()))
-            s = ''.join(['#', strtime])
-            f.write(s+'\n')
             self._config.write(f)
 
     def _get_host_info(self):
@@ -142,4 +151,8 @@ class Assist:
 
     def _save_info(self):
         self._write_json(
-                os.path.join(self._path, 'info.json'), self.info)
+                os.path.join(self._path, 'info.json'), self._info)
+
+    def _save_run(self):
+        self._write_json(
+                os.path.join(self._path, 'run.json'), self._run)
