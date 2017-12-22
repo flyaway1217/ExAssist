@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-20 20:21:59
+# Last modified: 2017-12-20 20:47:49
 
 """
 Basic Assist of Experiment.
@@ -17,6 +17,7 @@ import os
 import json
 import atexit
 import collections
+import time
 
 from ExAssist import host_info
 
@@ -126,6 +127,10 @@ class Assist:
         path = self._path
         path = os.path.join(path, 'config.ini')
         with open(path, 'w', encoding='utf8') as f:
+            strtime = time.strftime(
+                     '%Y_%m_%d_%H_%M_%S', time.localtime(time.time()))
+            s = ''.join(['#', strtime])
+            f.write(s+'\n')
             self._config.write(f)
 
     def _get_host_info(self):
