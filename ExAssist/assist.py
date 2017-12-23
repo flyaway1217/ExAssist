@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-21 21:37:53
+# Last modified: 2017-12-22 20:26:30
 
 """
 Basic Assist of Experiment.
@@ -43,33 +43,6 @@ class Assist:
         self._info = collections.defaultdict(dict)
         self._run = dict()
 
-    def _start(self):
-        if not self._locked:
-            strtime = time.strftime(
-                     '%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-            self._run['start_time'] = strtime
-
-            self._path = self._init_experiment()
-            self._write_config()
-            self._locked = True
-
-            info = self._get_host_info()
-            self._write_json(
-                    os.path.join(self._path, 'host.json'), info)
-
-    def _end(self, status):
-        if self._locked:
-            self._run['status'] = status
-            strtime = time.strftime(
-                     '%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-            self._run['stop_time'] = strtime
-            self._save_run()
-            self._save_info()
-            self._locked = False
-
-            self._run = dict()
-            self._info = collections.defaultdict(dict)
-
     @property
     def config(self):
         return self._config
@@ -95,6 +68,7 @@ class Assist:
 
     @ex_dir.setter
     def ex_dir(self, value):
+        # Once started,  ex_dir can not be modified.
         if not self._locked:
             self._ex_dir = value
 
@@ -103,7 +77,15 @@ class Assist:
         if self._locked:
             return self._info
         else:
-            return dict()
+            return collections.defaultdict(dict)
+
+    @property
+    def run_path(self):
+        # Means nothing before started.
+        if self._locked:
+            return self._path
+        else:
+            return None
 
     ########################################################
     # Private methods
@@ -156,3 +138,34 @@ class Assist:
     def _save_run(self):
         self._write_json(
                 os.path.join(self._path, 'run.json'), self._run)
+
+    def _start(self):
+        if not self._locked:
+            # Clear the state
+            self._run = dict()
+            self._info = collections.defaultdict(dict)
+
+            strtime = time.strftime(
+                     '%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+
+            self._path = self._init_experiment()
+            self._write_config()
+            self._locked = True
+
+            self._run['host_info'] = self._get_host_info()
+            self._run['start_time'] = strtime
+
+    def _end(self, status, traceback=None):
+        if self._locked:
+            self._run['status'] = status
+            strtime = time.strftime(
+                     '%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            self._run['stop_time'] = strtime
+            if traceback is not None:
+                self._run['traceback'] = traceback
+            self._save_run()
+            self._save_info()
+
+            # clear all the states
+            self._locked = False
+            self._path = None

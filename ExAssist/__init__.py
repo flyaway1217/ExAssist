@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:05:07
-# Last modified: 2017-12-21 21:47:46
+# Last modified: 2017-12-22 20:28:20
 
 """
 """
@@ -55,7 +55,7 @@ class Manager:
         """
         rv = None
         if not isinstance(name, str):
-            raise TypeError('A observer name must be a string')
+            raise TypeError('A assist name must be a string')
         _acquireLock()
         try:
             if name in self.assistDict:
@@ -82,13 +82,17 @@ class start:
 
     def __exit__(self, exc_type, exc_value, trace):
         if any((exc_type, exc_type, trace)):
-            traceback.format_exc()
+            s = traceback.format_exc()
             if exc_type == KeyboardInterrupt:
-                self._assist._end('Aborted')
+                self._assist._end('Aborted', s)
+                return True
             else:
-                self._assist._end('Failed')
+                self._assist._end('Failed', s)
+                print(s)
+                return True
         else:
             self._assist._end('Completed')
+            return True
 
 
 def getAssist(name):
