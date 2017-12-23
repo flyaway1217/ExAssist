@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-22 20:26:30
+# Last modified: 2017-12-22 21:31:40
 
 """
 Basic Assist of Experiment.
@@ -154,6 +154,7 @@ class Assist:
 
             self._run['host_info'] = self._get_host_info()
             self._run['start_time'] = strtime
+            self._run['comments'] = self._comments
 
     def _end(self, status, traceback=None):
         if self._locked:
