@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-22 21:31:40
+# Last modified: 2017-12-25 13:53:46
 
 """
 Basic Assist of Experiment.
@@ -141,12 +141,14 @@ class Assist:
 
     def _start(self):
         if not self._locked:
+            self._start_time = time.process_time()
             # Clear the state
             self._run = dict()
             self._info = collections.defaultdict(dict)
 
+            start_time = time.time()
             strtime = time.strftime(
-                     '%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                     '%Y-%m-%d %H:%M:%S', time.localtime(start_time))
 
             self._path = self._init_experiment()
             self._write_config()
@@ -159,14 +161,36 @@ class Assist:
     def _end(self, status, traceback=None):
         if self._locked:
             self._run['status'] = status
-            strtime = time.strftime(
-                     '%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-            self._run['stop_time'] = strtime
+            self._end_time()
             if traceback is not None:
                 self._run['traceback'] = traceback
             self._save_run()
             self._save_info()
 
-            # clear all the states
-            self._locked = False
-            self._path = None
+            self._clear_status()
+
+    def _end_time(self):
+        end_time = time.process_time()
+        cpu_lapse = end_time - self._start_time
+        strtime = time.strftime(
+                 '%Y-%m-%d %H:%M:%S', time.localtime(end_time))
+        self._run['cpu_time'] = cpu_lapse
+
+        end_time = time.time()
+        strtime = time.strftime(
+                 '%Y-%m-%d %H:%M:%S', time.localtime(end_time))
+        self._run['stop_time'] = strtime
+
+        start_time = time.strptime(self._run['start_time'],
+                                   '%Y-%m-%d %H:%M:%S')
+        start_time = time.mktime(start_time)
+        time_lapse = end_time - start_time
+        strtime = time.strftime(
+                 '%Y-%m-%d %H:%M:%S', time.localtime(time_lapse))
+        self._run['lapse_time'] = time_lapse
+
+    def _clear_status(self):
+        # clear all the states
+        self._locked = False
+        self._path = None
+        self._start_time = None
