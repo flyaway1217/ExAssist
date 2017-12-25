@@ -16,8 +16,8 @@
             <main role='main' class="col-sm-9 col-md-10 pt-3">
                 <h1>Experiments</h1>
                 <div class="table-responsive">
-                    <table class="table table-striped">
-                      <thead>
+                    <table class="table table-striped table-hover">
+                      <thead class="thead-dark">
                         <tr>
                           <th>#</th>
                           <th>Start time</th>
@@ -35,7 +35,13 @@
                        </tbody>
                     </table>
                     <%def name='makerow(row)'>
-                        <tr>
+                            % if row[5] == 'Failed':
+                            <tr class='table-danger'>
+                            % elif row[5] == 'Aborted':
+                            <tr class='table-warning'>
+                            % else:
+                            <tr class='table-success'>
+                            %endif
                             % for i,value in enumerate(row):
                                 % if i == 0:
                                     <td><a href='${value}/index.html'>${value}</a></td>

@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:04:39
-# Last modified: 2017-12-25 15:46:15
+# Last modified: 2017-12-25 16:13:04
 
 """
 Test for Assist
@@ -143,7 +143,7 @@ class TestEA:
     def test_time(self):
         assist = EA.getAssist('Test')
         with EA.start(assist) as assist:
-            A = 1000000000
+            A = 10000000
             for i in range(A):
                 A = A-1
         assert A == 0
