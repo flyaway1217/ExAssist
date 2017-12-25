@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:04:39
-# Last modified: 2017-12-22 20:28:02
+# Last modified: 2017-12-25 15:46:15
 
 """
 Test for Assist
@@ -139,3 +139,11 @@ class TestEA:
         with EA.start(assist) as assist:
             raise MemoryError
         assert assist._run['status'] == 'Failed'
+
+    def test_time(self):
+        assist = EA.getAssist('Test')
+        with EA.start(assist) as assist:
+            A = 1000000000
+            for i in range(A):
+                A = A-1
+        assert A == 0

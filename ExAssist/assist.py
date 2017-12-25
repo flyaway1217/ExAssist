@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-25 13:53:46
+# Last modified: 2017-12-25 15:43:56
 
 """
 Basic Assist of Experiment.
@@ -18,8 +18,11 @@ import json
 import collections
 import time
 import configparser
+import shutil
+from datetime import timedelta
 
 from ExAssist import host_info
+from ExAssist import template
 
 
 class Assist:
@@ -96,6 +99,7 @@ class Assist:
         This method does following things:
 
         1. Create the root directory if it does not exist.
+            1.a Copy the js and css directory into root directory.
         2. Find the max index of sub directoreis.
         3. Create a new directory.
         4. Return the path
@@ -104,6 +108,16 @@ class Assist:
         dir_name = self._ex_dir
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
+
+            # Copy all the css and js files.
+            src = os.path.join(os.path.dirname(__file__), 'templates/css')
+            dest = os.path.join(dir_name, 'css')
+            shutil.copytree(src, dest)
+
+            src = os.path.join(os.path.dirname(__file__), 'templates/js')
+            dest = os.path.join(dir_name, 'js')
+            shutil.copytree(src, dest)
+
         # Step 2
         names = os.listdir(dir_name)
         names = [int(s) for s in names if s.isdecimal()]
@@ -166,28 +180,30 @@ class Assist:
                 self._run['traceback'] = traceback
             self._save_run()
             self._save_info()
+            template.generate_index(self._ex_dir)
 
             self._clear_status()
 
     def _end_time(self):
+        # CPU time
         end_time = time.process_time()
         cpu_lapse = end_time - self._start_time
-        strtime = time.strftime(
-                 '%Y-%m-%d %H:%M:%S', time.localtime(end_time))
-        self._run['cpu_time'] = cpu_lapse
+        strtime = timedelta(seconds=cpu_lapse)
+        self._run['cpu_time'] = str(strtime)
 
+        # Stop time
         end_time = time.time()
         strtime = time.strftime(
                  '%Y-%m-%d %H:%M:%S', time.localtime(end_time))
         self._run['stop_time'] = strtime
 
+        # Lapse time
         start_time = time.strptime(self._run['start_time'],
                                    '%Y-%m-%d %H:%M:%S')
         start_time = time.mktime(start_time)
         time_lapse = end_time - start_time
-        strtime = time.strftime(
-                 '%Y-%m-%d %H:%M:%S', time.localtime(time_lapse))
-        self._run['lapse_time'] = time_lapse
+        strtime = timedelta(seconds=time_lapse)
+        self._run['lapse_time'] = str(strtime)
 
     def _clear_status(self):
         # clear all the states

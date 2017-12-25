@@ -1,13 +1,14 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Hello, world!</title>
+    <title>Experiments records</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/d3.min.js"></script>
   </head>
   <body>
     <div class='container-fluid'>
@@ -28,15 +29,22 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>1</td>
-                          <td>Lorem</td>
-                          <td>ipsum</td>
-                          <td>dolor</td>
-                          <td>sit</td>
-                        </tr>
+                            % for row in records:
+                                ${makerow(row)}
+                            % endfor
                        </tbody>
                     </table>
+                    <%def name='makerow(row)'>
+                        <tr>
+                            % for i,value in enumerate(row):
+                                % if i == 0:
+                                    <td><a href='${value}/index.html'>${value}</a></td>
+                                % else:
+                                    <td>${value}</td>\
+                                % endif
+                            % endfor
+                        </tr>
+                    </%def>
                 </div>
             </main>
         </div>
@@ -47,5 +55,6 @@
     <script src="js/jquery-3.2.1.min.js" ></script>
     <script src="js/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/script.js"></script>
   </body>
 </html>
