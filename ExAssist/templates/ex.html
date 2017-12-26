@@ -11,11 +11,97 @@
     <script src="../js/d3.min.js"></script>
   </head>
   <body>
+      <div class='container'>
+          <div class='row'>
+              <div class='col-sm'>
+               <h2>Experiment Information</h2>
+                <table class="table table-striped table-hover table-bordered">
+                    <tbody>
+                        <tr class="table-success">
+                            <th>Comments</th>
+                            <td>${result.get('comments', '')}</td>
+                        </tr>
+                        <tr class="table-success">
+                            <th>Start time</th>
+                            <td>${result.get('start_time', '')}</td>
+                        </tr>
+                        <tr class="table-success">
+                            <th>Stop time</th>
+                            <td>${result.get('stop_time', '')}</td>
+                        </tr>
+                        % if result.get('status', '') == 'Failed':
+                        <tr class='table-danger'>
+                        % elif result.get('status', '') == 'Aborted':
+                        <tr class='table-warning'>
+                        % else:
+                        <tr class="table-success">
+                        % endif
+                            <th>Status</th>
+                            <td>${result.get('status', '')}</td>
+                        </tr>
+                        <tr class="table-success">
+                            <th>Traceback</th>
+                            <td>${result.get('traceback', '')}</td>
+                        </tr>
+                        <tr class="table-success">
+                            <th>Time lapse</th>
+                            <td>${result.get('lapse_time', '')}</td>
+                        </tr>
+                        <tr class="table-success">
+                            <th>Cpu time</th>
+                            <td>${result.get('cpu_time', '')}</td>
+                        </tr>
+ 
+                    </tbody>
+                </table>
+             </div>
+              <div class='col-sm'>
+                <h2>Host Information</h2>
+                <%
+                    host = result['host_info']
+                %>
+                <table class="table table-striped table-hover table-bordered">
+                    <tbody>
+                        <tr class="table-success">
+                            <th>Host name</th>
+                            <td>${host.get('hostname', '')}</td>
+                        </tr>
+                        <tr class="table-success">
+                            <th>Operating System</th>
+                            <td>${host.get('os', '')}</td>
+                        </tr>
+                        <tr class="table-success">
+                            <th>CPU</th>
+                            <td>${host.get('cpu', '')}</td>
+                        </tr>
+                         <tr class="table-success">
+                            <th>GPU</th>
+                            <td>${host.get('gpu', '')}</td>
+                        </tr>
+                         <tr class="table-success">
+                            <th>Python Version</th>
+                            <td>${host.get('python_version', '')}</td>
+                        </tr>
+                         <tr class="table-success">
+                            <th>Python Packages</th>
+                            <td>${host.get('packages', '')}</td>
+                        </tr>
+                    </tbody>
+                </table>
+ 
+              </div>
+              <div class='col-sm'>
+                  <h2>Loss curve</h2>
+                  <canvas id='lineChart'></canvas>
+              </div>
+          </div>
+      </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="../js/jquery-3.2.1.min.js" ></script>
     <script src="../js/popper.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/Chart.js"></script>
     <script src="../js/script.js"></script>
   </body>
 </html>

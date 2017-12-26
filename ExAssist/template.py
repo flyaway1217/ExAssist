@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-25 13:59:12
-# Last modified: 2017-12-25 15:45:34
+# Last modified: 2017-12-26 10:14:37
 
 """
 Deal with the tempalte.
@@ -51,5 +51,20 @@ def generate_index(ex_dir):
     s = tp.render(records=records)
 
     path = os.path.join(ex_dir, 'index.html')
+    with open(path, 'w', encoding='utf8') as f:
+        f.write(s)
+
+
+def generate_ex_index(ex_path):
+    path = os.path.join(os.path.dirname(__file__), 'templates/ex.html')
+    tp = Template(filename=path)
+
+    path = os.path.join(ex_path, 'run.json')
+    with open(path, encoding='utf8') as f:
+        result = json.load(f)
+
+    s = tp.render(result=result)
+
+    path = os.path.join(ex_path, 'index.html')
     with open(path, 'w', encoding='utf8') as f:
         f.write(s)

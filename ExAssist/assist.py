@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-25 20:50:15
+# Last modified: 2017-12-26 10:13:06
 
 """
 Basic Assist of Experiment.
@@ -183,9 +183,7 @@ class Assist:
 
             # Html related
             template.generate_index(self._ex_dir)
-            src = os.path.join(os.path.dirname(__file__), 'templates/ex.html')
-            dest = os.path.join(self._path, 'index.html')
-            shutil.copyfile(src, dest)
+            template.generate_ex_index(self._path)
 
             self._clear_status()
 
