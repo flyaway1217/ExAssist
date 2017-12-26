@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-25 15:43:56
+# Last modified: 2017-12-25 20:50:15
 
 """
 Basic Assist of Experiment.
@@ -180,7 +180,12 @@ class Assist:
                 self._run['traceback'] = traceback
             self._save_run()
             self._save_info()
+
+            # Html related
             template.generate_index(self._ex_dir)
+            src = os.path.join(os.path.dirname(__file__), 'templates/ex.html')
+            dest = os.path.join(self._path, 'index.html')
+            shutil.copyfile(src, dest)
 
             self._clear_status()
 
