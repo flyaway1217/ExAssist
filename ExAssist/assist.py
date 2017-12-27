@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-27 10:05:31
+# Last modified: 2017-12-27 10:14:42
 
 """
 Basic Assist of Experiment.
@@ -45,6 +45,7 @@ class Assist:
         self._tempate_path = './templates'
 
         self._current_info = collections.defaultdict(dict)
+        self._result = collections.defaultdict(dict)
         self._info = []
         self._run = dict()
 
@@ -103,6 +104,13 @@ class Assist:
     def info(self):
         if self._locked:
             return self._current_info
+        else:
+            return collections.defaultdict(dict)
+
+    @property
+    def result(self):
+        if self._locked:
+            return self._result
         else:
             return collections.defaultdict(dict)
 
@@ -184,6 +192,7 @@ class Assist:
                 os.path.join(self._path, 'info.json'), self._info)
 
     def _save_run(self):
+        self._run['result'] = self._result
         self._write_json(
                 os.path.join(self._path, 'run.json'), self._run)
 
@@ -251,3 +260,4 @@ class Assist:
 
         self._current_info = collections.defaultdict(dict)
         self._info = []
+        self._result = collections.defaultdict(dict)

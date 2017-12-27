@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-25 13:59:12
-# Last modified: 2017-12-27 10:04:04
+# Last modified: 2017-12-27 10:25:47
 
 """
 Deal with the tempalte.
@@ -34,12 +34,13 @@ def gather_experiments(ex_dir):
                 value = json.load(f)
             record = []
             record.append(name)
-            record.append(value['start_time'])
-            record.append(value['stop_time'])
-            record.append(value['lapse_time'])
-            record.append(value['cpu_time'])
-            record.append(value['status'])
-            record.append(value['comments'])
+            record.append(value.get('start_time', None))
+            record.append(value.get('stop_time', None), )
+            record.append(value.get('lapse_time', None))
+            record.append(value.get('cpu_time', None))
+            record.append(value.get('status', None))
+            record.append(value.get('comments', None))
+            record.append(value.get('result', None))
             reval.append(record)
         except FileNotFoundError:
             continue

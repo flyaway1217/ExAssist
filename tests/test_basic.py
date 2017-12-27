@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:04:39
-# Last modified: 2017-12-26 19:00:05
+# Last modified: 2017-12-27 10:26:05
 
 """
 Test for Assist
@@ -174,3 +174,15 @@ class TestEA:
             for i in range(A):
                 A = A-1
         assert A == 0
+
+    def test_result(self):
+        assist = EA.getAssist('Test')
+        assert assist.result == collections.defaultdict(dict)
+        assist.result['recall'] = 0.9
+        assert assist.result == collections.defaultdict(dict)
+        with EA.start(assist) as assist:
+            assist.result['precision'] = 1.0
+            assist.result['recall'] = 0.9
+            assert assist.result['precision'] == 1.0
+            assert assist.result['recall'] == 0.9
+        assert assist.result == collections.defaultdict(dict)
