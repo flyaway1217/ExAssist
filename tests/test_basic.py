@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:04:39
-# Last modified: 2017-12-25 16:13:04
+# Last modified: 2017-12-26 19:00:05
 
 """
 Test for Assist
@@ -51,6 +51,7 @@ class TestEA:
 
         assist.config = config_tmp
         assert assist.config == config_tmp
+        assist.config = config
 
     def test_comments(self):
         """ Test for Comments.
@@ -117,6 +118,32 @@ class TestEA:
                 assert assist.info['loss'][i] == 100 - i
 
         assert assist.info == collections.defaultdict(dict)
+
+    def test_step(self):
+        """Test for steps.
+
+        Only accessable after started.
+        """
+        assist = EA.getAssist('Test')
+        for i in range(100):
+            assist.info['loss'][i] = 100-i
+
+        assert assist.info == collections.defaultdict(dict)
+        assist.step()
+        assist.step()
+        assist.step()
+        assist.step()
+        assert assist.epoch == 0
+        with EA.start(assist) as assist:
+            assert assist.info == collections.defaultdict(dict)
+            for i in range(100):
+                assist.info['loss'] = 100 - i
+                assist.step()
+            for i in range(100):
+                assert assist._info[i]['loss'] == 100 - i
+            assert assist.epoch == 100
+
+        assert assist.epoch == 0
 
     def test_run_path(self):
         """ Test for run_path.

@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-26 10:13:06
+# Last modified: 2017-12-26 19:00:23
 
 """
 Basic Assist of Experiment.
@@ -43,9 +43,23 @@ class Assist:
         self._locked = False
         self._path = None
 
-        self._info = collections.defaultdict(dict)
+        self._current_info = collections.defaultdict(dict)
+        self._info = []
         self._run = dict()
 
+    ########################################################
+    # Public methods
+    ########################################################
+    def step(self):
+        """ Move to next epoch.
+        """
+        if self._locked:
+            self._info.append(self._current_info)
+            self._current_info = collections.defaultdict(dict)
+
+    ########################################################
+    # Properties
+    ########################################################
     @property
     def config(self):
         return self._config
@@ -78,7 +92,7 @@ class Assist:
     @property
     def info(self):
         if self._locked:
-            return self._info
+            return self._current_info
         else:
             return collections.defaultdict(dict)
 
@@ -89,6 +103,12 @@ class Assist:
             return self._path
         else:
             return None
+
+    @property
+    def epoch(self):
+        """Returnt the current epoch.
+        """
+        return len(self._info)
 
     ########################################################
     # Private methods
@@ -158,7 +178,8 @@ class Assist:
             self._start_time = time.process_time()
             # Clear the state
             self._run = dict()
-            self._info = collections.defaultdict(dict)
+            self._current_info = collections.defaultdict(dict)
+            self._info = []
 
             start_time = time.time()
             strtime = time.strftime(
@@ -213,3 +234,6 @@ class Assist:
         self._locked = False
         self._path = None
         self._start_time = None
+
+        self._current_info = collections.defaultdict(dict)
+        self._info = []
