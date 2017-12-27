@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-26 19:00:23
+# Last modified: 2017-12-26 20:18:30
 
 """
 Basic Assist of Experiment.
@@ -129,14 +129,18 @@ class Assist:
         if not os.path.exists(dir_name):
             os.mkdir(dir_name)
 
-            # Copy all the css and js files.
-            src = os.path.join(os.path.dirname(__file__), 'templates/css')
-            dest = os.path.join(dir_name, 'css')
-            shutil.copytree(src, dest)
+        # Copy all the css and js files.
+        src = os.path.join(os.path.dirname(__file__), 'templates/css')
+        dest = os.path.join(dir_name, 'css')
+        if os.path.exists(dest):
+            shutil.rmtree(dest)
+        shutil.copytree(src, dest)
 
-            src = os.path.join(os.path.dirname(__file__), 'templates/js')
-            dest = os.path.join(dir_name, 'js')
-            shutil.copytree(src, dest)
+        src = os.path.join(os.path.dirname(__file__), 'templates/js')
+        dest = os.path.join(dir_name, 'js')
+        if os.path.exists(dest):
+            shutil.rmtree(dest)
+        shutil.copytree(src, dest)
 
         # Step 2
         names = os.listdir(dir_name)
