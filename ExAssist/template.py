@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-25 13:59:12
-# Last modified: 2017-12-26 10:14:37
+# Last modified: 2017-12-26 14:50:24
 
 """
 Deal with the tempalte.
@@ -15,6 +15,8 @@ Deal with the tempalte.
 
 import os
 import json
+import configparser
+import collections
 
 from mako.template import Template
 
@@ -63,7 +65,17 @@ def generate_ex_index(ex_path):
     with open(path, encoding='utf8') as f:
         result = json.load(f)
 
-    s = tp.render(result=result)
+    path = os.path.join(ex_path, 'config.ini')
+    config = configparser.ConfigParser(
+            interpolation=configparser.ExtendedInterpolation())
+    config.read(path, encoding='utf8')
+
+    con = collections.defaultdict(dict)
+    for section in config.sections():
+        for name, value in config.items(section):
+            con[section][name] = value
+
+    s = tp.render(config=con, result=result)
 
     path = os.path.join(ex_path, 'index.html')
     with open(path, 'w', encoding='utf8') as f:
