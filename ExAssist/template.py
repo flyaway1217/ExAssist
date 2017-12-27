@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-25 13:59:12
-# Last modified: 2017-12-26 14:50:24
+# Last modified: 2017-12-27 10:04:04
 
 """
 Deal with the tempalte.
@@ -46,8 +46,8 @@ def gather_experiments(ex_dir):
     return reval
 
 
-def generate_index(ex_dir):
-    path = os.path.join(os.path.dirname(__file__), 'templates/index.html')
+def generate_index(template_path, ex_dir):
+    path = os.path.join(template_path, 'index.html')
     tp = Template(filename=path)
     records = gather_experiments(ex_dir)
     s = tp.render(records=records)
@@ -57,8 +57,8 @@ def generate_index(ex_dir):
         f.write(s)
 
 
-def generate_ex_index(ex_path):
-    path = os.path.join(os.path.dirname(__file__), 'templates/ex.html')
+def generate_ex_index(template_path, ex_path):
+    path = os.path.join(template_path, 'ex.html')
     tp = Template(filename=path)
 
     path = os.path.join(ex_path, 'run.json')

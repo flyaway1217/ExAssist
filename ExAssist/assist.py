@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-26 20:18:30
+# Last modified: 2017-12-27 10:05:31
 
 """
 Basic Assist of Experiment.
@@ -39,9 +39,10 @@ class Assist:
         self.name = name
         self._ex_dir = 'Experiments/'
         self._config = configparser.ConfigParser()
-        self._comments = None
         self._locked = False
         self._path = None
+        self._comments = None
+        self._tempate_path = './templates'
 
         self._current_info = collections.defaultdict(dict)
         self._info = []
@@ -60,6 +61,15 @@ class Assist:
     ########################################################
     # Properties
     ########################################################
+    @property
+    def template(self):
+        return self._tempate_path
+
+    @template.setter
+    def template(self, value):
+        if not self._locked:
+            self._tempate_path = value
+
     @property
     def config(self):
         return self._config
@@ -130,13 +140,13 @@ class Assist:
             os.mkdir(dir_name)
 
         # Copy all the css and js files.
-        src = os.path.join(os.path.dirname(__file__), 'templates/css')
+        src = os.path.join(self._tempate_path, 'css')
         dest = os.path.join(dir_name, 'css')
         if os.path.exists(dest):
             shutil.rmtree(dest)
         shutil.copytree(src, dest)
 
-        src = os.path.join(os.path.dirname(__file__), 'templates/js')
+        src = os.path.join(self._tempate_path, 'js')
         dest = os.path.join(dir_name, 'js')
         if os.path.exists(dest):
             shutil.rmtree(dest)
@@ -207,8 +217,8 @@ class Assist:
             self._save_info()
 
             # Html related
-            template.generate_index(self._ex_dir)
-            template.generate_ex_index(self._path)
+            template.generate_index(self._tempate_path, self._ex_dir)
+            template.generate_ex_index(self._tempate_path, self._path)
 
             self._clear_status()
 
