@@ -10,6 +10,9 @@ Welcome to ExAssist's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   quickstart
+   observe
+   template
 
 
 Indices and tables
