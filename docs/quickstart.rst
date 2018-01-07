@@ -52,9 +52,9 @@ Enter the Experiments directory, run the following code::
 Now, open your browser and open page at `http://localhost:8080/ <http://localhost:8080/>`_.
 You will see an index page like:
 
-.. image:: images/index.png
+.. figure:: images/index.png
 
 This table shows basic infomation of your experiments.
 Click on the number of experiment,  you will see more detialed information of this experiment:
 
-.. image:: images/details.png
+.. figure:: images/details.png
