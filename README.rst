@@ -1,17 +1,27 @@
-# ExperimentObserver
-An observer of each experiment
+ExAssist
+========
 
+Installation
+============
 
-# Action List
+.. code:: python
+    
+    pip install ExAssist
 
-<del>1. Record the running information into files.</del>
+Example
+=======
 
-<del>2. Collect trace infomation and write down into info.json</del>
+.. code:: python
+    
+    import ExAssist as EA
 
-3. info dictionary 
+    # Get an instance of ExAssist just like getting a logger.
+    assist = EA.getAssist('Test')
+    with EA.start(assist) as assist:
+        # Here starts your experiments.
+        for i in range(100):
+            assist.info['loss'] = 100 - i
+            assist.step()
 
-4. Choose HTML template engine.
-
-5. Design the basic template.
-
-6. Use D3 to draw the plots.
+Documents
+=========
