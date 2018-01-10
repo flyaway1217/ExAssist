@@ -20,6 +20,10 @@ Installation
 Example
 =======
 
+1. Download the `template files <http://exassist.zhouyichu.com/en/latest/_downloads/templates.zip>`_ into your experiment root directory.
+
+2. Write up your experiments in ``main.py``:
+
 .. code:: python
     
     import ExAssist as EA
@@ -31,6 +35,14 @@ Example
         for i in range(100):
             assist.info['loss'] = 100 - i
             assist.step()
+
+3. Run your experiment:
+
+.. code:: console 
+
+    python main.py
+
+More details, please see `<http://exassist.zhouyichu.com/en/latest/quickstart.html>`_.
 
 Documents
 =========
