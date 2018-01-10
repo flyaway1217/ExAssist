@@ -24,7 +24,7 @@ setup(
         author='Flyaway',
         author_email='flyaway1217@gmail.com',
 
-        description='Scoring tools for bracket tree banks.',
-        # long_description=open('README.rst', encoding='utf8').read(),
+        description='Experiment Assist',
+        long_description=open('README.rst', encoding='utf8').read(),
         install_requires=install_require,
 )
