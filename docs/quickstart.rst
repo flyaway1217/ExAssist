@@ -18,7 +18,7 @@ Also, you can clone the git repo and install it from source file:
     python setup.py install
 
 
-Hellow World
+Hello World
 ============
 Let's directly jump into it. Here is a miniml experiment using ExAssist:
 

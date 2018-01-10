@@ -6,6 +6,15 @@
 Welcome to ExAssist's documentation!
 ====================================
 
+``ExAssist`` is an light-weight assist tool that can save your time from doing experiments.
+It is designed to help you with:
+
+    1. Track the configurations for each experiment.
+    2. Record any temporary data during  experiments.
+    3. Gather host and environment information for each experiment.
+
+
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
