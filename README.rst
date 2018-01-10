@@ -1,6 +1,8 @@
 ExAssist
 ========
 
+|build-status| |docs|
+
 ``ExAssist`` is an light-weight assist tool that can save your time from doing experiments.
 It is designed to help you with:
 
