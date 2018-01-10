@@ -32,3 +32,5 @@ Example
 
 Documents
 =========
+
+`<http://exassist.zhouyichu.com/en/latest/>`_
