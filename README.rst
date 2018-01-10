@@ -1,7 +1,7 @@
 ExAssist
 ========
 
-|build-status| |docs|
+|docs|
 
 ``ExAssist`` is an light-weight assist tool that can save your time from doing experiments.
 It is designed to help you with:
@@ -37,12 +37,7 @@ Documents
 
 `<http://exassist.zhouyichu.com/en/latest/>`_
 
-.. |build-status| image:: https://img.shields.io/travis/rtfd/readthedocs.org.svg?style=flat
-    :alt: build status
+ .. |docs| image:: https://readthedocs.org/projects/exassist/badge/?version=latest
+    :target: http://exassist.readthedocs.io/en/latest/?badge=latest
     :scale: 100%
-    :target: https://travis-ci.org/rtfd/readthedocs.org
-
-.. |docs| image:: https://readthedocs.org/projects/docs/badge/?version=latest
     :alt: Documentation Status
-    :scale: 100%
-    :target: https://docs.readthedocs.io/en/latest/?badge=latest
