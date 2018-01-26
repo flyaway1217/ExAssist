@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2017-12-27 10:14:42
+# Last modified: 2018-01-26 15:39:43
 
 """
 Basic Assist of Experiment.
@@ -30,7 +30,7 @@ class Assist:
     Attributes:
         - name: The name of observer.
         - _ex_dir: Directory of all experiments.
-        - _config: Config object of current Assist.
+        - _config_path: The path of config file.
         - _comments: Comments for current experiment.
         - _started: Indicate if the assist is locked.
         - _path: The directory of current experiment.
@@ -38,7 +38,8 @@ class Assist:
     def __init__(self, name):
         self.name = name
         self._ex_dir = 'Experiments/'
-        self._config = configparser.ConfigParser()
+        self._config_path = './config.ini'
+        self._config = None
         self._locked = False
         self._path = None
         self._comments = None
@@ -72,13 +73,13 @@ class Assist:
             self._tempate_path = value
 
     @property
-    def config(self):
+    def config_path(self):
         return self._config
 
-    @config.setter
-    def config(self, value):
+    @config_path.setter
+    def config_path(self, value):
         if not self._locked:
-            self._config = value
+            self._config_path = value
 
     @property
     def comments(self):
@@ -127,6 +128,15 @@ class Assist:
         """Returnt the current epoch.
         """
         return len(self._info)
+
+    @property
+    def config(self):
+        """Returnt the config object.
+        """
+        if self._locked:
+            return self._config
+        else:
+            return None
 
     ########################################################
     # Private methods
@@ -209,6 +219,8 @@ class Assist:
                      '%Y-%m-%d %H:%M:%S', time.localtime(start_time))
 
             self._path = self._init_experiment()
+            self._read_config()
+            self._set_runpath_config(self._path)
             self._write_config()
             self._locked = True
 
@@ -261,3 +273,19 @@ class Assist:
         self._current_info = collections.defaultdict(dict)
         self._info = []
         self._result = collections.defaultdict(dict)
+
+    def _set_runpath_config(self, path):
+        """Set the default path in config object
+        """
+        section = 'runpath'
+        config = self._config
+        if config.has_section(section):
+            for option in config.options(section):
+                value = config[section][option]
+                config.set(section, option, os.path.join(path, value))
+
+    def _read_config(self):
+        config = configparser.ConfigParser(
+                interpolation=configparser.ExtendedInterpolation())
+        config.read(self._config_path, encoding='utf8')
+        self._config = config
