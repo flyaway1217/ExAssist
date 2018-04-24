@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-24 10:59:35
-# Last modified: 2017-12-20 20:39:30
+# Last modified: 2018-04-24 14:57:03
 
 """
 Collect information about the host of an experiment.
@@ -17,7 +17,6 @@ TODO:
 """
 
 import os
-import pip
 import platform
 import re
 import subprocess
@@ -85,13 +84,14 @@ def _gpus():
     return gpu_info
 
 
+# TODO
 def _packages():
-    packages = pip.get_installed_distributions()
-    lib_info = []
-    for lib in packages:
-        s = '{a}=={b}'.format(a=str(lib.key), b=str(lib.version))
-        lib_info.append(s)
-    return lib_info
+    # packages = pip.get_installed_distributions()
+    # lib_info = []
+    # for lib in packages:
+    #     s = '{a}=={b}'.format(a=str(lib.key), b=str(lib.version))
+    #     lib_info.append(s)
+    return []
 
 
 def get_host_info():
