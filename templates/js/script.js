@@ -1,29 +1,111 @@
 d3.json('./info.json', function(error, data){
-    console.log(data);
-    var ctx = document.getElementById('loss_chart').getContext('2d');
-    var labels = [];
-    var y = [];
-    var i;
-    for(i=0;i < data.length;++i){
-        labels.push(i.toString());
-        y.push(data[i].loss);
-    }
-    var chart = new Chart(ctx, {
-        // The type of chart we want to create
-        type: 'line',
-
-
-        // The data for our dataset
-        data: {
-            labels: labels, 
-            datasets: [{
-                label: "Loss",
-                borderColor: 'rgb(255, 99, 132)',
-                data: y,
-            }]
-        },
-
-        // Configuration options go here
-        options: {}
-    });
+    window.data = data;
+    printValues(data);
 });
+
+function colortList(){
+    reval = []
+    reval.push('rgb(255,  0, 0)');
+    reval.push('rgb(0,  255, 0)');
+    reval.push('rgb(0,  0, 255)');
+    reval.push('rgb(255,  0, 255)');
+    reval.push('rgb(255,  255, 0)');
+    return reval;
+}
+
+
+function update(choices, min, max){
+    data = window.data
+    let i;
+    labels = [];
+    plot_data = [];
+    for(i=min;i < max;++i){
+        labels.push(i.toString());
+    }
+    choices.forEach(function(name){
+        tmp_data = [];
+        for(i=min; i < max;++i){
+            tmp_data.push(data[i][name])
+        }
+        plot_data.push(tmp_data)
+    })
+
+    objects = []
+    colors = colortList()
+    choices.forEach(function(name, i){
+        obj = {
+            label: name, 
+            borderColor: colors[i%5],
+            data: plot_data[i],
+        }
+        objects.push(obj);
+    })
+
+    let ctx = document.getElementById('chart').getContext('2d');
+    let chart = new Chart(ctx, {
+        type: 'line', 
+        data:{
+            labels: labels, 
+            datasets: objects, 
+        }, 
+        options:{}
+    });
+}
+
+function chooseData(){
+    data = window.data;
+
+    let choices = []
+    d3.selectAll('.box').each(function(d){
+        cb = d3.select(this);
+        if (cb.property('checked')){
+            choices.push(cb.property('value'));
+        }
+    });
+    
+    let min = d3.select('#start').property('value')
+    let max = d3.select('#end').property('value')
+
+    if (min < 0 || min > max || max > data.length || max < 0){
+        return;
+    }
+
+    if(choices.length > 0){
+        update(choices, min, max);
+    }
+} 
+function printValues(data){
+    let values = [];
+    for (let name in data[0]){
+        values.push(name);
+    }
+    d3.select('#value').selectAll('input')
+        .data(values)
+        .enter()
+        .append('span')
+            .attr('class', 'boxlabel')
+        .append('input')
+            .attr('class', 'box')
+            .attr('type', 'checkbox')
+            .property('checked', function(d){
+                if(d == 'loss'){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            })
+            .attr('onClick', 'chooseData()')
+            .attr('value', function(d, i){
+                return d;
+            });
+    d3.selectAll('.boxlabel')
+        .style('display', 'inline-block')
+        .style('width', '80px')
+        .append('text')
+        .text(function(d){return d;});
+
+    d3.select('#start').attr('value', 0);
+    d3.select('#end').attr('value', data.length);
+    chooseData()
+}

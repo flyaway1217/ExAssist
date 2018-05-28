@@ -106,8 +106,16 @@
             </table>
         </div>
         <div>
-            <h1>Loss Curve</h1>
-            <canvas id='loss_chart'></canvas>
+            <h1>Curve</h1>
+            <div id="plot-selector">
+                <label>Plot:</label>
+                <div id='value'>
+                </div>
+                <div>Start epoch:<input type='text' id='start' name='start'></div>
+                <div>End epoch:<input type='text' id='end' name='start'></div>
+                <div><input type='submit' id='submit' onclick="chooseData()"></div>
+            </div>
+            <canvas id='chart'></canvas>
         </div>
       </div>
     <!-- Optional JavaScript -->
