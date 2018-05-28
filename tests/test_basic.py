@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:04:39
-# Last modified: 2018-05-28 15:02:04
+# Last modified: 2018-05-28 15:09:49
 
 """
 Test for Assist
@@ -59,22 +59,26 @@ class TestEA:
         1. Can not modify the ex_dir once started.
         2. Always can acess the ex_dir.
         """
+        ex_dir1 = 'tests/Experiments/'
+        ex_dir2 = 'test/Ex2'
         assist = EA.getAssist('Test')
-        assert assist.ex_dir == 'tests/Experiments/'
+        assert assist.ex_dir == ex_dir1
 
-        ex_dir = 'test/Ex2'
-        assist.ex_dir = ex_dir
-        assert assist.ex_dir == ex_dir
+        assist.ex_dir = ex_dir2
+        assert assist.ex_dir == ex_dir2
 
-        assist.ex_dir = 'tests/Experiments/'
+        assist.ex_dir = ex_dir1
         with EA.start(assist) as assist:
-            assist.ex_dir = ex_dir
-            assert assist.ex_dir == 'tests/Experiments/'
+            assist.ex_dir = ex_dir1
+            assert assist.ex_dir == ex_dir1
+            assist.ex_dir = ex_dir2
+            assert assist.ex_dir == ex_dir1
+            assert assist.ex_dir != ex_dir2
 
-        assist.ex_dir = ex_dir
-        assert assist.ex_dir == ex_dir
+        assist.ex_dir = ex_dir2
+        assert assist.ex_dir == ex_dir2
 
-        assist.ex_dir = 'tests/Experiments/'
+        assist.ex_dir = ex_dir1
 
     def test_info(self):
         """Test for info.
@@ -131,7 +135,7 @@ class TestEA:
 
         with EA.start(assist) as assist:
             assert type(assist.run_path) == str
-            assert assist.config['runpath']['scores_path'] != '/scores.txt'
+            assert assist.config['run']['scores_path'] != '/scores.txt'
         assert assist.run_path is None
 
     def test_interrupt(self):
