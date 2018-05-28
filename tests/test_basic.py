@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:04:39
-# Last modified: 2018-01-26 15:43:40
+# Last modified: 2018-05-28 15:02:04
 
 """
 Test for Assist
@@ -52,30 +52,6 @@ class TestEA:
     #     assist.config = config_tmp
     #     assert assist.config == config_tmp
     #     assist.config = config
-
-    def test_comments(self):
-        """ Test for Comments.
-
-        1. Can not modify the comments once started.
-        2. Always can acess the comments.
-        """
-        assist = EA.getAssist('Test')
-        comments = 'First comment'
-
-        assert assist.comments is None
-
-        assist.comments = comments
-        assert assist.comments == comments
-        assert assist._locked is False
-
-        with EA.start(assist) as assist:
-            assert assist._locked is True
-            assist.comments = 'Second comment'
-            assert assist.comments == comments
-
-        assert assist._locked is False
-        assist.comments = 'Second comment'
-        assert assist.comments == 'Second comment'
 
     def test_ex_dir(self):
         """ Test for ex_dir.
@@ -187,3 +163,7 @@ class TestEA:
             assert assist.result['precision'] == 1.0
             assert assist.result['recall'] == 0.9
         assert assist.result == collections.defaultdict(dict)
+
+    def test_comments(self):
+        assist = EA.getAssist('Test')
+        assert assist._comments == 'First comment'

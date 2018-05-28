@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2018-01-26 15:39:43
+# Last modified: 2018-05-28 14:59:58
 
 """
 Basic Assist of Experiment.
@@ -37,9 +37,14 @@ class Assist:
     """
     def __init__(self, name):
         self.name = name
+
         self._ex_dir = 'Experiments/'
         self._config_path = './config.ini'
         self._config = None
+
+        # If this instance is locked, its
+        # meta data can not be modified,  such
+        # as config_path, ex_dir
         self._locked = False
         self._path = None
         self._comments = None
@@ -65,6 +70,8 @@ class Assist:
     ########################################################
     @property
     def template(self):
+        """The path of template file.
+        """
         return self._tempate_path
 
     @template.setter
@@ -74,6 +81,8 @@ class Assist:
 
     @property
     def config_path(self):
+        """The path of config file.
+        """
         return self._config
 
     @config_path.setter
@@ -82,17 +91,9 @@ class Assist:
             self._config_path = value
 
     @property
-    def comments(self):
-        return self._comments
-
-    @comments.setter
-    def comments(self, value):
-        if not self._locked:
-            print(value)
-            self._comments = value
-
-    @property
     def ex_dir(self):
+        """The root directory of all experiments.
+        """
         return self._ex_dir
 
     @ex_dir.setter
@@ -105,6 +106,7 @@ class Assist:
     def info(self):
         if self._locked:
             return self._current_info
+        # it is meaningless to use info when it is unlocked.
         else:
             return collections.defaultdict(dict)
 
@@ -131,7 +133,7 @@ class Assist:
 
     @property
     def config(self):
-        """Returnt the config object.
+        """Return the config object.
         """
         if self._locked:
             return self._config
@@ -220,7 +222,9 @@ class Assist:
 
             self._path = self._init_experiment()
             self._read_config()
+            # replace the path in runpath section
             self._set_runpath_config(self._path)
+            # write back the configurations
             self._write_config()
             self._locked = True
 
@@ -265,7 +269,8 @@ class Assist:
         self._run['lapse_time'] = str(strtime)
 
     def _clear_status(self):
-        # clear all the states
+        """Clear all the states
+        """
         self._locked = False
         self._path = None
         self._start_time = None
@@ -277,10 +282,13 @@ class Assist:
     def _set_runpath_config(self, path):
         """Set the default path in config object
         """
-        section = 'runpath'
+        section = 'run'
         config = self._config
         if config.has_section(section):
             for option in config.options(section):
+                if option == 'comments':
+                    self._comments = config[section][option]
+                    continue
                 value = config[section][option]
                 config.set(section, option, os.path.join(path, value))
 
