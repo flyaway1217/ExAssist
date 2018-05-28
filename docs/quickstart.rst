@@ -3,7 +3,7 @@ Quickstart
 
 Installation
 ============
-You can get ExAssist directly from pypi like this:
+You can install ExAssist directly from pypi like this:
 
 .. code-block:: console
 

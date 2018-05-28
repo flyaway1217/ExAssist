@@ -27,12 +27,7 @@ After getting an instance of ``Assist``, you need to setup some basic informatio
 
     - The root path of your experiemnt records.(default: ``./Experiments/``)
     - The path of template directory, which contains the template files. Templates files are used to render data into html files.
-    - A `Config <https://docs.python.org/3.6/library/configparser.html#configparser.ConfigParser>`_ object, which contains all the config information of your experiment.
-    - The comment of current experiment. This is optional.
-
-    .. HINT::
-
-        You can use `ConfigParser <https://docs.python.org/3.6/library/configparser.html#configparser.ConfigParser>`_ to load multiple config files into one config object.
+    - The path of `Config <https://docs.python.org/3.6/library/configparser.html#configparser.ConfigParser>`_  file, which contains all the config information of your experiment.
 
 
 A simple example is like this:
@@ -43,14 +38,8 @@ A simple example is like this:
     assist = EA.getAssist('Test')
     # Set up the root path of experiment records
     assist.ex_dir = 'tests/Experiments/'
-    # Load the configuration
-    config = configparser.ConfigParser(
-            interpolation=configparser.ExtendedInterpolation())
-    config.read('config.ini', encoding='utf8')
     # Set up the config
-    assist.config = config
-    # Set up the comment
-    assist.comments = 'This is just a comment'
+    assist.config_file = './config.ini'
 
 
 Once setting up all the informaion, you can start your experiments.
@@ -67,6 +56,7 @@ ExAssist uses context manager to observe your experiment::
 When you entering this context, ExAssist will automatically:
     - Create a uniqe directory which will be used to save all the information about this experiment.
     - Gather meta information about your experiment, like your starting time and environment information.
+    - Load the config file from the path you provided. You can access the `Config <https://docs.python.org/3.6/library/configparser.html#configparser.ConfigParser>`_ object by ``assist.config``.
 
 .. NOTE::
     Once entering the context, you can not modify the basic information about ``Assist`` covered in last section, see :ref:`create-assist`.
@@ -137,6 +127,7 @@ It gives the abilities:
                 assist.step()
 
     In the code above, we record ``loss`` value for each iteration. Method ``step()`` tells ExAssist that the current iteration is finished.
+    ``assis.info`` is dictionary which means you can put anything you want into this variable.
     The ``info`` dictionary is meant to store temporary information about the experiment, like training loss for each epoch or the total number of parameters.
     It is updated once you invoke ``step`` method.
     You can add whatever information you like to ``info``.
