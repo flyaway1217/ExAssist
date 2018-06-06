@@ -4,7 +4,7 @@ d3.json('./info.json', function(error, data){
 });
 
 function colortList(){
-    reval = []
+    reval = [];
     reval.push('rgb(255,  0, 0)');
     reval.push('rgb(0,  255, 0)');
     reval.push('rgb(0,  0, 255)');
@@ -15,8 +15,8 @@ function colortList(){
 
 
 function update(choices, min, max){
-    data = window.data
-    let i;
+    data = window.data;
+    var i;
     labels = [];
     plot_data = [];
     for(i=min;i < max;++i){
@@ -25,24 +25,27 @@ function update(choices, min, max){
     choices.forEach(function(name){
         tmp_data = [];
         for(i=min; i < max;++i){
-            tmp_data.push(data[i][name])
+            tmp_data.push(data[i][name]);
         }
-        plot_data.push(tmp_data)
-    })
+        plot_data.push(tmp_data);
+    });
 
-    objects = []
-    colors = colortList()
+    objects = [];
+    colors = colortList();
     choices.forEach(function(name, i){
         obj = {
             label: name, 
             borderColor: colors[i%5],
             data: plot_data[i],
-        }
+        };
         objects.push(obj);
-    })
+    });
 
-    let ctx = document.getElementById('chart').getContext('2d');
-    let chart = new Chart(ctx, {
+    var ctx = document.getElementById('chart').getContext('2d');
+    if (window.fig != undefined){
+        window.fig.destroy();
+    }
+    window.fig = new Chart(ctx, {
         type: 'line', 
         data:{
             labels: labels, 
@@ -55,7 +58,7 @@ function update(choices, min, max){
 function chooseData(){
     data = window.data;
 
-    let choices = []
+    var choices = [];
     d3.selectAll('.box').each(function(d){
         cb = d3.select(this);
         if (cb.property('checked')){
@@ -63,8 +66,8 @@ function chooseData(){
         }
     });
     
-    let min = d3.select('#start').property('value')
-    let max = d3.select('#end').property('value')
+    var min = d3.select('#start').property('value');
+    var max = d3.select('#end').property('value');
 
     if (min < 0 || min > max || max > data.length || max < 0){
         return;
@@ -75,8 +78,8 @@ function chooseData(){
     }
 } 
 function printValues(data){
-    let values = [];
-    for (let name in data[0]){
+    var values = [];
+    for (var name in data[0]){
         values.push(name);
     }
     d3.select('#value').selectAll('input')
@@ -107,5 +110,5 @@ function printValues(data){
 
     d3.select('#start').attr('value', 0);
     d3.select('#end').attr('value', data.length);
-    chooseData()
+    chooseData();
 }
