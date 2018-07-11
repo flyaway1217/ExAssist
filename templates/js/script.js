@@ -66,8 +66,8 @@ function chooseData(){
         }
     });
     
-    var min = d3.select('#start').property('value');
-    var max = d3.select('#end').property('value');
+    var min = parseInt(d3.select('#start').property('value'));
+    var max = parseInt(d3.select('#end').property('value'));
 
     if (min < 0 || min > max || max > data.length || max < 0){
         return;
