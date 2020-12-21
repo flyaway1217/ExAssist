@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-24 10:59:35
-# Last modified: 2018-04-24 14:57:03
+# Last modified: 2020-12-21 15:57:34
 
 """
 Collect information about the host of an experiment.
@@ -21,6 +21,7 @@ import platform
 import re
 import subprocess
 import xml.etree.ElementTree as ET
+import pkg_resources
 
 
 __all__ = ['get_host_info']
@@ -84,14 +85,11 @@ def _gpus():
     return gpu_info
 
 
-# TODO
 def _packages():
-    # packages = pip.get_installed_distributions()
-    # lib_info = []
-    # for lib in packages:
-    #     s = '{a}=={b}'.format(a=str(lib.key), b=str(lib.version))
-    #     lib_info.append(s)
-    return []
+    installed_packages = pkg_resources.working_set
+    installed_packages_list = sorted(["%s==%s" % (i.key, i.version)
+                                     for i in installed_packages])
+    return installed_packages_list
 
 
 def get_host_info():
