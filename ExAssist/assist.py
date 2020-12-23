@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2018-05-28 14:59:58
+# Last modified: 2020-12-23 14:36:49
 
 """
 Basic Assist of Experiment.
@@ -18,8 +18,11 @@ import json
 import collections
 import time
 import configparser
+from configparser import ConfigParser
 import shutil
+from argparse import Namespace
 from datetime import timedelta
+from typing import Union
 
 from ExAssist import host_info
 from ExAssist import template
@@ -30,16 +33,14 @@ class Assist:
     Attributes:
         - name: The name of observer.
         - _ex_dir: Directory of all experiments.
-        - _config_path: The path of config file.
         - _comments: Comments for current experiment.
         - _started: Indicate if the assist is locked.
         - _path: The directory of current experiment.
     """
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
 
         self._ex_dir = 'Experiments/'
-        self._config_path = './config.ini'
         self._config = None
 
         # If this instance is locked, its
@@ -65,6 +66,33 @@ class Assist:
             self._info.append(self._current_info)
             self._current_info = collections.defaultdict(dict)
 
+    def set_config(self, config: Union[dict, ConfigParser, Namespace]):
+        """Set the config settings.
+           This method can only be called before entering context environment.
+
+        This method can take one of the followings as input:
+            - A dictionary object that contains all the
+              configurations as (key, value)
+            - A argparse.namespace object.
+              This namespace object should contains all the configurations.
+            - A ConfigParser object that loads configurations
+              from config files.
+
+        Thid method provides two functions:
+            1. No matter what the input argument is, this method will
+               transform all the configurations into a namespace object.
+            2. If a key starts with 'run_' and self is in the dev mode,
+               this method will automatically update the value of that
+               key with current running experiment directory.
+        """
+        if self._locked:
+            return
+        else:
+            config = self._to_dict(config)
+            self._config = Namespace()
+            for key, value in config.items():
+                setattr(self._config, key, value)
+
     ########################################################
     # Properties
     ########################################################
@@ -78,17 +106,6 @@ class Assist:
     def template(self, value):
         if not self._locked:
             self._tempate_path = value
-
-    @property
-    def config_path(self):
-        """The path of config file.
-        """
-        return self._config
-
-    @config_path.setter
-    def config_path(self, value):
-        if not self._locked:
-            self._config_path = value
 
     @property
     def ex_dir(self):
@@ -208,6 +225,10 @@ class Assist:
         self._write_json(
                 os.path.join(self._path, 'run.json'), self._run)
 
+    def _save_config(self):
+        self._write_json(
+                os.path.join(self._path, 'config.json'), vars(self._config))
+
     def _start(self):
         if not self._locked:
             self._start_time = time.process_time()
@@ -221,11 +242,8 @@ class Assist:
                      '%Y-%m-%d %H:%M:%S', time.localtime(start_time))
 
             self._path = self._init_experiment()
-            self._read_config()
-            # replace the path in runpath section
-            self._set_runpath_config(self._path)
-            # write back the configurations
-            self._write_config()
+            self._set_runtime_config()
+            self._save_config()
             self._locked = True
 
             self._run['host_info'] = self._get_host_info()
@@ -279,21 +297,40 @@ class Assist:
         self._info = []
         self._result = collections.defaultdict(dict)
 
-    def _set_runpath_config(self, path):
-        """Set the default path in config object
-        """
-        section = 'run'
-        config = self._config
-        if config.has_section(section):
-            for option in config.options(section):
-                if option == 'comments':
-                    self._comments = config[section][option]
-                    continue
-                value = config[section][option]
-                config.set(section, option, os.path.join(path, value))
-
     def _read_config(self):
         config = configparser.ConfigParser(
                 interpolation=configparser.ExtendedInterpolation())
         config.read(self._config_path, encoding='utf8')
         self._config = config
+
+    def _to_dict(self, config: Union[dict, ConfigParser, Namespace]):
+        if type(config) == dict:
+            return config
+        elif type(config) == ConfigParser:
+            reval = dict()
+            sections = config.sections()
+            for sec in sections:
+                for key, value in config.items(sec):
+                    if sec == 'run':
+                        key = '_'.join([sec, key])
+                    reval[key] = value
+            return reval
+        elif type(config) == Namespace:
+            return vars(config)
+        else:
+            raise Exception('Unrecognized config object!')
+
+    def _set_runtime_config(self):
+        names = list(self._config.__dict__.keys())
+        for name in names:
+            if name.startswith('run_'):
+                if name == 'run_comments':
+                    self._comments = getattr(self._config, name)
+                else:
+                    # Delete the run_* attribute
+                    value = getattr(self._config, name)
+                    delattr(self._config, name)
+
+                    value = os.path.join(self._path, value)
+                    name = name[4:]
+                    setattr(self._config, name, value)

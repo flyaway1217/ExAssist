@@ -7,12 +7,13 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:04:39
-# Last modified: 2018-05-28 15:09:49
+# Last modified: 2020-12-22 14:27:52
 
 """
 Test for Assist
 """
 import collections
+import configparser
 
 import ExAssist as EA
 
@@ -25,33 +26,28 @@ class TestEA:
         # config = configparser.ConfigParser(
         #         interpolation=configparser.ExtendedInterpolation())
         # config.read('tests/config.ini', encoding='utf8')
-        # assist.config = config
+        # assist.
         # assist.comments = 'This is a test comment'
-        assist.config_path = 'tests/config.ini'
+        # assist.config_path = 'tests/config.ini'
 
-    # def test_config(self):
-    #     """Test for config.
+    def test_config(self):
+        """Test for config.
 
-    #     1. Can not modify the config once started.
-    #     2. Always can acess the config.
-    #     """
-    #     assist = EA.getAssist('Test')
-    #     config = configparser.ConfigParser(
-    #             interpolation=configparser.ExtendedInterpolation())
-    #     config.read('tests/config.ini', encoding='utf8')
+        1. Load the config file.
+        2. Transform the config into dictionary.
+        """
+        assist = EA.getAssist('Test')
+        config = configparser.ConfigParser(
+                interpolation=configparser.ExtendedInterpolation())
+        config.read('tests/config.ini', encoding='utf8')
 
-    #     config_tmp = configparser.ConfigParser(
-    #             interpolation=configparser.ExtendedInterpolation())
-    #     assert assist.config != config
+        assist.set_config(config)
+        with EA.start(assist) as assist:
+            assert type(assist.config) == dict
 
-    #     with EA.start(assist) as assist:
-    #         assert assist.config == config
-    #         assist.config = config_tmp
-    #         assert assist.config == config
-
-    #     assist.config = config_tmp
-    #     assert assist.config == config_tmp
-    #     assist.config = config
+        # assist.config = config_tmp
+        # assert assist.config == config_tmp
+        # assist.config = config
 
     def test_ex_dir(self):
         """ Test for ex_dir.

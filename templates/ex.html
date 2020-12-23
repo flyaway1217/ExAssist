@@ -78,30 +78,13 @@
         <div class="row">
             <h1>Config Options</h1>
             <table class="table table-striped table-hover table-bordered">
-                <thead>
-                    <tr class="table-success">
-                        % for section in config.keys():
-                        <th>${section}</th>
-                        % endfor
-                    </tr>
-                </thead>
                 <tbody>
-                    <tr class='table-success'>
-                    % for section in config.keys():
-                        <td>
-                            <table class='table table-striped table-hover table-bordered'>
-                            % for name in config[section]:
-                            <tbody>
-                                <tr class='table-primary'>
-                                    <td>${name}</td>
-                                    <td>${config[section][name]}</td>
-                                </tr>
-                            </tbody>
-                            % endfor
-                            </table>
-                        </td>
-                    % endfor
+                    % for name in config.keys():
+                    <tr class='table-primary'>
+                        <td>${name}</td>
+                        <td>${config[name]}</td>
                     </tr>
+                    % endfor
                 </tbody>
             </table>
         </div>
