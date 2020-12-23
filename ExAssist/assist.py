@@ -4,10 +4,10 @@
 # Author: Yichu Zhou - flyaway1217@gmail.com
 # Blog: zhouyichu.com
 #
-# Python release: 3.6.0
+# Python release: 3.8.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2020-12-23 14:36:49
+# Last modified: 2020-12-23 15:19:31
 
 """
 Basic Assist of Experiment.
@@ -17,7 +17,6 @@ import os
 import json
 import collections
 import time
-import configparser
 from configparser import ConfigParser
 import shutil
 from argparse import Namespace
@@ -50,6 +49,7 @@ class Assist:
         self._path = None
         self._comments = None
         self._tempate_path = './templates'
+        self._activate = False
 
         self._current_info = collections.defaultdict(dict)
         self._result = collections.defaultdict(dict)
@@ -62,7 +62,7 @@ class Assist:
     def step(self):
         """ Move to next epoch.
         """
-        if self._locked:
+        if self._locked and self._activate:
             self._info.append(self._current_info)
             self._current_info = collections.defaultdict(dict)
 
@@ -81,17 +81,21 @@ class Assist:
         Thid method provides two functions:
             1. No matter what the input argument is, this method will
                transform all the configurations into a namespace object.
-            2. If a key starts with 'run_' and self is in the dev mode,
+            2. If a key starts with 'run_' and self is in the activate mode,
                this method will automatically update the value of that
                key with current running experiment directory.
         """
-        if self._locked:
-            return
-        else:
+        if not self._locked:
             config = self._to_dict(config)
             self._config = Namespace()
             for key, value in config.items():
                 setattr(self._config, key, value)
+
+    def activate(self):
+        self._activate = True
+
+    def deactivate(self):
+        self._activate = False
 
     ########################################################
     # Properties
@@ -104,7 +108,7 @@ class Assist:
 
     @template.setter
     def template(self, value):
-        if not self._locked:
+        if not self._locked and self._activate:
             self._tempate_path = value
 
     @property
@@ -116,12 +120,12 @@ class Assist:
     @ex_dir.setter
     def ex_dir(self, value):
         # Once started,  ex_dir can not be modified.
-        if not self._locked:
+        if not self._locked and self._activate:
             self._ex_dir = value
 
     @property
     def info(self):
-        if self._locked:
+        if self._activate and self._locked:
             return self._current_info
         # it is meaningless to use info when it is unlocked.
         else:
@@ -129,7 +133,7 @@ class Assist:
 
     @property
     def result(self):
-        if self._locked:
+        if self._activate and self._locked:
             return self._result
         else:
             return collections.defaultdict(dict)
@@ -137,16 +141,15 @@ class Assist:
     @property
     def run_path(self):
         # Means nothing before started.
-        if self._locked:
+        if self._activate and self._locked:
             return self._path
-        else:
-            return None
 
     @property
     def epoch(self):
         """Returnt the current epoch.
         """
-        return len(self._info)
+        if self._activate and self._locked:
+            return len(self._info)
 
     @property
     def config(self):
@@ -154,8 +157,6 @@ class Assist:
         """
         if self._locked:
             return self._config
-        else:
-            return None
 
     ########################################################
     # Private methods
@@ -201,14 +202,6 @@ class Assist:
         os.mkdir(path)
         return path
 
-    def _write_config(self):
-        """Write down the config file.
-        """
-        path = self._path
-        path = os.path.join(path, 'config.ini')
-        with open(path, 'w', encoding='utf8') as f:
-            self._config.write(f)
-
     def _get_host_info(self):
         return host_info.get_host_info()
 
@@ -230,7 +223,7 @@ class Assist:
                 os.path.join(self._path, 'config.json'), vars(self._config))
 
     def _start(self):
-        if not self._locked:
+        if self._activate and not self._locked:
             self._start_time = time.process_time()
             # Clear the state
             self._run = dict()
@@ -251,7 +244,7 @@ class Assist:
             self._run['comments'] = self._comments
 
     def _end(self, status, traceback=None):
-        if self._locked:
+        if self._activate and self._locked:
             self._run['status'] = status
             self._end_time()
             if traceback is not None:
@@ -296,12 +289,6 @@ class Assist:
         self._current_info = collections.defaultdict(dict)
         self._info = []
         self._result = collections.defaultdict(dict)
-
-    def _read_config(self):
-        config = configparser.ConfigParser(
-                interpolation=configparser.ExtendedInterpolation())
-        config.read(self._config_path, encoding='utf8')
-        self._config = config
 
     def _to_dict(self, config: Union[dict, ConfigParser, Namespace]):
         if type(config) == dict:

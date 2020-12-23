@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:04:39
-# Last modified: 2020-12-22 14:27:52
+# Last modified: 2020-12-23 15:16:36
 
 """
 Test for Assist
@@ -16,12 +16,14 @@ import collections
 import configparser
 
 import ExAssist as EA
+from argparse import Namespace
 
 
 class TestEA:
     @classmethod
     def setup_class(cls):
         assist = EA.getAssist('Test')
+        assist.activate()
         assist.ex_dir = 'tests/Experiments/'
         # config = configparser.ConfigParser(
         #         interpolation=configparser.ExtendedInterpolation())
@@ -43,11 +45,9 @@ class TestEA:
 
         assist.set_config(config)
         with EA.start(assist) as assist:
-            assert type(assist.config) == dict
-
-        # assist.config = config_tmp
-        # assert assist.config == config_tmp
-        # assist.config = config
+            assert type(assist.config) == Namespace
+            assert assist.config.c1 == '0.0001'
+            assert 'run_comments' not in assist.config
 
     def test_ex_dir(self):
         """ Test for ex_dir.
@@ -109,7 +109,7 @@ class TestEA:
         assist.step()
         assist.step()
         assist.step()
-        assert assist.epoch == 0
+        assert assist.epoch is None
         with EA.start(assist) as assist:
             assert assist.info == collections.defaultdict(dict)
             for i in range(100):
@@ -119,7 +119,7 @@ class TestEA:
                 assert assist._info[i]['loss'] == 100 - i
             assert assist.epoch == 100
 
-        assert assist.epoch == 0
+        assert assist.epoch is None
 
     def test_run_path(self):
         """ Test for run_path.
@@ -167,3 +167,29 @@ class TestEA:
     def test_comments(self):
         assist = EA.getAssist('Test')
         assert assist._comments == 'First comment'
+
+    def test_activate(self):
+        assist = EA.getAssist('Test')
+        assist.deactivate()
+        config = configparser.ConfigParser(
+                interpolation=configparser.ExtendedInterpolation())
+        config.read('tests/config.ini', encoding='utf8')
+
+        assist.set_config(config)
+        with EA.start(assist) as assist:
+            assert type(assist.config) == Namespace
+            assert assist.config.c1 == '0.0001'
+            assert 'run_comments' in assist.config
+
+            assist.template('others/templates/')
+            assert assist.template == './templates'
+            assist.ex_dir == 'others/experiments/'
+            assert assist.ex_dir == 'tests/Experiments/'
+
+            assist.info['var'] = 'var'
+            assert len(assist.info) == 0
+            assist.result['var'] = 'var'
+            assert len(assist.result) == 0
+
+            assert assist.run_path is None
+            assert assist.epoch is None
