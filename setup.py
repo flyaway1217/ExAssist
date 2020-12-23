@@ -27,4 +27,5 @@ setup(
         description='Experiment Assist',
         long_description=open('README.rst', encoding='utf8').read(),
         install_requires=install_require,
+        include_package_data=True
 )

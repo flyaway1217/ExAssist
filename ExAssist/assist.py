@@ -7,7 +7,7 @@
 # Python release: 3.8.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2020-12-23 15:19:31
+# Last modified: 2020-12-23 15:53:34
 
 """
 Basic Assist of Experiment.
@@ -22,6 +22,7 @@ import shutil
 from argparse import Namespace
 from datetime import timedelta
 from typing import Union
+from pathlib import Path
 
 from ExAssist import host_info
 from ExAssist import template
@@ -48,7 +49,9 @@ class Assist:
         self._locked = False
         self._path = None
         self._comments = None
-        self._tempate_path = './templates'
+
+        path = Path(__file__).parents[0]
+        self._tempate_path = path / 'templates/'
         self._activate = False
 
         self._current_info = collections.defaultdict(dict)
