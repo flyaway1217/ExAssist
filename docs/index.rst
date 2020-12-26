@@ -21,7 +21,6 @@ It is designed to help you with:
 
    quickstart
    observe
-   template
 
 
 Indices and tables

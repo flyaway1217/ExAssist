@@ -23,11 +23,19 @@ Just like `logging <https://docs.python.org/3.6/library/logging.html#logging.get
 
     assist = EA.getAssist('Test')
 
-After getting an instance of ``Assist``, you need to setup some basic information:
+After getting an instance of ``Assist``, you need to provide
+the following information:
 
     - The root path of your experiemnt records.(default: ``./Experiments/``)
-    - The path of template directory, which contains the template files. Templates files are used to render data into html files.
-    - The path of `Config <https://docs.python.org/3.6/library/configparser.html#configparser.ConfigParser>`_  file, which contains all the config information of your experiment.
+    - A config variable that keeps all the configurations of
+      your experiments. This config variable could be:
+
+            - A ``dict`` object that contains all the
+              configurations as (key, value)
+            - A ``argparse.namespace`` object.
+              This namespace object should contains all the configurations.
+            - A ``ConfigParser`` object that loads configurations
+              from config files.
 
 
 A simple example is like this:
@@ -36,10 +44,10 @@ A simple example is like this:
 
     # Get the Assist instance
     assist = EA.getAssist('Test')
-    # Set up the root path of experiment records
+    # Setup the root path of experiment records
     assist.ex_dir = 'tests/Experiments/'
-    # Set up the config
-    assist.config_file = './config.ini'
+    # Setup the config variable
+    assist.set_config(config)
 
 
 Once setting up all the informaion, you can start your experiments.
@@ -56,7 +64,6 @@ ExAssist uses context manager to observe your experiment::
 When you entering this context, ExAssist will automatically:
     - Create a uniqe directory which will be used to save all the information about this experiment.
     - Gather meta information about your experiment, like your starting time and environment information.
-    - Load the config file from the path you provided. You can access the `Config <https://docs.python.org/3.6/library/configparser.html#configparser.ConfigParser>`_ object by ``assist.config``.
 
 .. NOTE::
     Once entering the context, you can not modify the basic information about ``Assist`` covered in last section, see :ref:`create-assist`.
@@ -85,33 +92,24 @@ For each experiment running, ExAssist will create a new sub-directory in the pat
 
     Experiments/
     ├── 0
-    │   ├── config.ini
+    │   ├── config.json
     │   ├── index.html
     │   ├── info.json
     │   └── run.json
     ├── 1
-    │   ├── config.ini
+    │   ├── config.json
     │   ├── index.html
     │   ├── info.json
     │   └── run.json
 
 
-As we can see above, ExAssist will also generate a report (``index.html``) for each run from given template files. See :doc:`/template`.
+As we can see above, ExAssist will also generate a report (``index.html``) for each run. 
 
 Assist an Experiment
 ====================
 
 The second function of ExAssist is to assist your experiment.
 It gives the abilities:
-
-    - Access the configuration in any places. This can help you avoid passing a lot configurations through different files:
-
-    .. code-block:: python
-
-        import ExAssist as EA
-
-        assist = EA.getAssist('Test')
-        rate = assist.config.get('default','rate')
 
     - Record the running information without writing extra IO functions. ExAssis can help you save all the temporary information during the experiment, such as loss and gradients.
 
@@ -143,3 +141,28 @@ It gives the abilities:
     - ``assist.result``: ``result`` are designed to keep the evaluation results of this experiment. ``result`` does not affeced by ``step()`` method.
     - ``assist.run_path``: Read-only. You can access the path of current experiment data. This is useful when you want to save your model in the same directory with its meta information.
     - ``assist.epoch``: Read-only. Indicates the internal epoch number of ExAssist. It increases every time when you invoke ``step()`` method.
+
+
+Deactivate
+==========
+
+When publishing the code, you usually do not want ExAssist
+to observe any experiments. You can deactivate ExAssist by:
+
+
+    .. code-block:: python
+
+        import ExAssis as EA
+
+        assist = EA.getAssist('Test')
+        assist.deactivate()
+        with EA.start(assist) as assist:
+            # Here starts your experiments.
+            for i in range(100):
+                assist.info['loss'] = 100 - i
+                assist.step()
+
+By invoking ``deactivate()``,  ExAssis will not do anything
+during run as if it does not exist.
+
+
