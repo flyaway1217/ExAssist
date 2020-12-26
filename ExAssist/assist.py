@@ -7,7 +7,7 @@
 # Python release: 3.8.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2020-12-26 11:15:33
+# Last modified: 2020-12-26 11:49:22
 
 """
 Basic Assist of Experiment.
@@ -41,7 +41,7 @@ class Assist:
         self.name = name
 
         self._ex_dir = 'Experiments/'
-        self._config = None
+        self._config = Namespace()
 
         # If this instance is locked, its
         # meta data can not be modified,  such
@@ -52,7 +52,7 @@ class Assist:
 
         path = Path(__file__).parents[0]
         self._tempate_path = path / 'templates/'
-        self._activate = False
+        self._activate = True
 
         self._current_info = collections.defaultdict(dict)
         self._result = collections.defaultdict(dict)
