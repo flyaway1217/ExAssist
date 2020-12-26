@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:04:39
-# Last modified: 2020-12-23 15:16:36
+# Last modified: 2020-12-26 11:11:58
 
 """
 Test for Assist
@@ -166,7 +166,7 @@ class TestEA:
 
     def test_comments(self):
         assist = EA.getAssist('Test')
-        assert assist._comments == 'First comment'
+        assert assist._comments == 'Second comment'
 
     def test_activate(self):
         assist = EA.getAssist('Test')
