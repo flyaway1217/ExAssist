@@ -7,7 +7,7 @@
 # Python release: 3.8.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2020-12-23 15:53:34
+# Last modified: 2020-12-26 11:15:33
 
 """
 Basic Assist of Experiment.
@@ -103,16 +103,16 @@ class Assist:
     ########################################################
     # Properties
     ########################################################
-    @property
-    def template(self):
-        """The path of template file.
-        """
-        return self._tempate_path
+    # @property
+    # def template(self):
+    #     """The path of template file.
+    #     """
+    #     return self._tempate_path
 
-    @template.setter
-    def template(self, value):
-        if not self._locked and self._activate:
-            self._tempate_path = value
+    # @template.setter
+    # def template(self, value):
+    #     if not self._locked and self._activate:
+    #         self._tempate_path = value
 
     @property
     def ex_dir(self):
