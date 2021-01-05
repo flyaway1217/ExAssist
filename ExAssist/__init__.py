@@ -7,7 +7,7 @@
 # Python release: 3.6.0
 #
 # Date: 2017-12-18 21:05:07
-# Last modified: 2020-12-23 15:55:23
+# Last modified: 2020-12-26 12:27:07
 
 """
 """
@@ -18,7 +18,7 @@ import traceback
 from ExAssist import assist
 
 __all__ = ['getAssist', 'start']
-__version__ = '0.3.1'
+__version__ = '0.3.2'
 
 
 _lock = threading.RLock()

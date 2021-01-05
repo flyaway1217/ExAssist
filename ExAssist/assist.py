@@ -7,7 +7,7 @@
 # Python release: 3.8.0
 #
 # Date: 2017-11-23 10:28:17
-# Last modified: 2020-12-26 11:49:22
+# Last modified: 2020-12-26 22:52:20
 
 """
 Basic Assist of Experiment.
@@ -305,10 +305,8 @@ class Assist:
                         key = '_'.join([sec, key])
                     reval[key] = value
             return reval
-        elif type(config) == Namespace:
-            return vars(config)
         else:
-            raise Exception('Unrecognized config object!')
+            return vars(config)
 
     def _set_runtime_config(self):
         names = list(self._config.__dict__.keys())
@@ -316,6 +314,7 @@ class Assist:
             if name.startswith('run_'):
                 if name == 'run_comments':
                     self._comments = getattr(self._config, name)
+                    delattr(self._config, name)
                 else:
                     # Delete the run_* attribute
                     value = getattr(self._config, name)
